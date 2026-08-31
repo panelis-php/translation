@@ -2,7 +2,10 @@
 
 namespace Panelis\Translation\Panel\Resources\TranslationResource\Enums;
 
-enum TranslationPermission: string
+use Filament\Support\Contracts\HasLabel;
+use Illuminate\Support\Str;
+
+enum TranslationPermission: string implements HasLabel
 {
     case Browse = 'BrowseTranslation';
 
@@ -21,4 +24,9 @@ enum TranslationPermission: string
     case Backup = 'BackupTranslation';
 
     case Restore = 'RestoreTranslation';
+
+    public function getLabel(): string
+    {
+        return __(sprintf('translation::permission.name_%s', Str::snake($this->value)));
+    }
 }
