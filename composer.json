@@ -5,6 +5,12 @@
   "keywords": [
     "panelis"
   ],
+  "authors": [
+    {
+      "name": "Yugo",
+      "email": "dedy.yugo.purwanto@gmail.com"
+    }
+  ],
   "require": {
     "lorisleiva/laravel-actions": "^2.10",
     "illuminate/support": "^13.0",
@@ -31,7 +37,13 @@
     "panelis": {
       "plugins": [
         "Panelis\\Translation\\Plugins\\TranslationPlugin"
-      ]
+      ],
+      "permissions": {
+        "translation": "Panelis\\Translation\\Panel\\Resources\\TranslationResource\\Enums\\TranslationPermission"
+      }
     }
+  },
+  "require-dev": {
+    "laravel/pint": "^1.30"
   }
 }
