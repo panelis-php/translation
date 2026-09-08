@@ -4,6 +4,8 @@ namespace Panelis\Translation\Models;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Query\Builder;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\TranslationLoader\LanguageLine;
 
 /**
@@ -13,12 +15,28 @@ use Spatie\TranslationLoader\LanguageLine;
  */
 class Translation extends LanguageLine
 {
+    use LogsActivity;
+
     public $table = 'language_lines';
 
     protected $casts = [
         'text' => 'array',
         'is_system' => 'boolean',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('translation')
+            ->logOnly(['group', 'key', 'text', 'is_system'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
+
+    public function getDescriptionForEvent(string $eventName): string
+    {
+        return 'translation::activity.'.$eventName;
+    }
 
     public function group(): Attribute
     {
