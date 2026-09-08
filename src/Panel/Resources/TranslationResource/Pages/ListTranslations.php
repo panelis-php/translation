@@ -48,6 +48,8 @@ class ListTranslations extends ListRecords
                     ->action(function (array $data): void {
                         ImportFromFiles::run($data['files'] ?? null);
 
+                        audit('translation')->event('import_files')->log('translation::activity.import_files');
+
                         Notification::make()
                             ->title(__('filament-actions::create.single.notifications.created.title'))
                             ->success()
@@ -68,12 +70,18 @@ class ListTranslations extends ListRecords
                         try {
                             Import::run($lines, $data['locale']);
 
+                            audit('translation')->event('import')->log('translation::activity.import');
+
                             Notification::make()
                                 ->success()
                                 ->title(__('translation::translation.file_imported'))
                                 ->send();
                         } catch (Exception $e) {
                             Log::error($e);
+                            audit('translation')
+                                ->event('import_failed')
+                                ->withProperty('exception', $e::class)
+                                ->log('translation::activity.import_failed');
 
                             Notification::make()
                                 ->danger()
@@ -129,6 +137,10 @@ class ListTranslations extends ListRecords
                             }, sprintf('%s.json', $locale));
                         } catch (Exception $e) {
                             Log::error($e);
+                            audit('translation')
+                                ->event('export_failed')
+                                ->withProperty('exception', $e::class)
+                                ->log('translation::activity.export_failed');
 
                             Notification::make()
                                 ->danger()
@@ -148,12 +160,18 @@ class ListTranslations extends ListRecords
                         try {
                             Backup::run();
 
+                            audit('translation')->event('backup')->log('translation::activity.backup');
+
                             Notification::make()
                                 ->title(__('translation::translation.backup_success'))
                                 ->success()
                                 ->send();
                         } catch (Exception $e) {
                             Log::error($e);
+                            audit('translation')
+                                ->event('backup_failed')
+                                ->withProperty('exception', $e::class)
+                                ->log('translation::activity.backup_failed');
 
                             Notification::make()
                                 ->title(__('translation::translation.backup_failed'))
@@ -171,12 +189,18 @@ class ListTranslations extends ListRecords
                         try {
                             Restore::run();
 
+                            audit('translation')->event('restore')->log('translation::activity.restore');
+
                             Notification::make()
                                 ->title(__('translation::translation.restore_success'))
                                 ->success()
                                 ->send();
                         } catch (Exception $e) {
                             Log::error($e);
+                            audit('translation')
+                                ->event('restore_failed')
+                                ->withProperty('exception', $e::class)
+                                ->log('translation::activity.restore_failed');
 
                             Notification::make()
                                 ->title(__('translation::translation.restore_failed'))
